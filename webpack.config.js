@@ -11,6 +11,10 @@ module.exports = {
         assetModuleFilename: 'assets/[hash][ext][query]'
     },
 
+    stats: {
+        errorDetails: true
+    },
+
     module: {
         rules: [
             {
