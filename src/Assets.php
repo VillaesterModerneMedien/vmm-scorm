@@ -51,7 +51,7 @@ class Assets
 
 
     // src/Assets.php
-    public function enqueueScripts()
+    public function VMM_enqueue_assets()
     {
         wp_enqueue_script(
             'vmm-scorm',

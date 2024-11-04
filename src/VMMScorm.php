@@ -118,14 +118,30 @@ class VMMScorm {
 	 */
 	public function init() {
 
-		require_once ABSPATH . 'wp-includes/pluggable.php';
+        // Define plugin constants
+        define('VMM_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
+        define('VMM_URI', untrailingslashit(plugin_dir_url(__FILE__)));
+        define( 'VMM_PLUGIN_VERSION', '1.0.0' );
+        define( 'VMM_PLUGIN_MODE', 'prod' ); // prod or dev
+        define( 'VMM_BUILD_PATH', untrailingslashit( VMM_PATH . '/build' ) );
+        define( 'VMM_BUILD_URL', untrailingslashit( VMM_URI . '/build' ) );
+        define( 'VMM_IMAGE_URL', untrailingslashit( VMM_BUILD_URL . '/img' ) );
+        define( 'VMM_CSS_URL', untrailingslashit( VMM_BUILD_URL . '/css' ) );
+        define( 'VMM_JS_URL', untrailingslashit( VMM_BUILD_URL . '/js' ) );
+
+
+        require_once VMM_PATH . '/Assets.php';
+        require_once VMM_PATH . '/UpdateHandler.php';
+        require_once VMM_PATH . '/HelperFunctions.php';
+        require_once VMM_PATH . '/TemplatePages.php';
+
+        require_once ABSPATH . 'wp-includes/pluggable.php';
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';
-    require_once VMM_PATH . '/helper/helper-functions.php';
+
 
 		 Assets::get_instance();
 		 TemplatePages::get_instance();
-     UpdateHandler::get_instance();
-
+         UpdateHandler::get_instance();
 
 	} // end class
 

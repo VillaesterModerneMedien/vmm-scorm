@@ -18,20 +18,9 @@ if (!defined('ABSPATH')) {
   exit; // Exit if accessed directly
 }
 
-// Define plugin constants
-define('VMM_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
-define('VMM_URI', untrailingslashit(plugin_dir_url(__FILE__)));
-define( 'VMM_PLUGIN_VERSION', '1.0.0' );
-define( 'VMM_PLUGIN_MODE', 'prod' ); // prod or dev
-define( 'VMM_BUILD_PATH', untrailingslashit( VMM_PATH . '/build' ) );
-define( 'VMM_BUILD_URL', untrailingslashit( VMM_URI . '/build' ) );
-define( 'VMM_IMAGE_URL', untrailingslashit( VMM_BUILD_URL . '/img' ) );
-define( 'VMM_CSS_URL', untrailingslashit( VMM_BUILD_URL . '/css' ) );
-define( 'VMM_JS_URL', untrailingslashit( VMM_BUILD_URL . '/js' ) );
+require_once 'src/VMMScorm.php';
 
-require_once 'vendor/autoload.php';
-
-if ( class_exists( 'VmmHelper\VmmScorm' ) ) {
+if ( class_exists( 'VMMHelper\VMMScorm' ) ) {
 
 	$VMM_scorm = VMMHelper\VMMScorm::get_instance();
 	 register_activation_hook( __FILE__, [$VMM_scorm, 'activate'] );

@@ -3,7 +3,6 @@ export default class Dialog {
     constructor() {
         this.initDialogs();
     }
-
     initDialogs() {
         const dialogs = document.querySelectorAll('[data-dialog]');
 

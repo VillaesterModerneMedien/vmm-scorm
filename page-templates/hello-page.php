@@ -672,7 +672,7 @@ if( is_array($imageSources) && count($imageSources) > 0 ) {
 
  foreach($imageSources as $image_source) {
   
-  $image_filename = ecom_get_filename_with_extension($image_source);
+  $image_filename = vmm_get_filename_with_extension($image_source);
 
   $image_export_path = $upload_dir['basedir'] . "/scorm_exports/images/$image_filename";
 
@@ -694,7 +694,7 @@ if( is_array($videoSources) && count($videoSources) > 0 ) {
 
   foreach($videoSources as $video_source) {
    
-   $video_filename = ecom_get_filename_with_extension($video_source);
+   $video_filename = vmm_get_filename_with_extension($video_source);
  
    $video_export_path = $upload_dir['basedir'] . "/scorm_exports/videos/$video_filename";
  
@@ -787,7 +787,7 @@ foreach ($pElements as $p) {
           $export_directory = $upload_dir['basedir'] . "/scorm_exports/uncanny-snc/$itemId";
           
           // Usage
-          ecom_copy_directory($copy_directory, $export_directory);
+          vmm_copy_directory($copy_directory, $export_directory);
           
         }
 

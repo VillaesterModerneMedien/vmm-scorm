@@ -56,7 +56,7 @@ class TemplatePages {
 
   }
 
- public function VMM_custom_pages( $page_template ){
+ /*public function VMM_custom_pages( $page_template ){
 
       $slug = get_page_template_slug();
       $template_path = VMM_PATH . '/page-templates/';
@@ -84,7 +84,7 @@ class TemplatePages {
         return $post_templates;
 
   }
-
+*/
 }
 
 // End class

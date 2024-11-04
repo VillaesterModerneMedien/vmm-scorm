@@ -177,7 +177,7 @@ public function add_custom_script_to_admin_footer() { ?>
             },
             error: function(response) {
               _this.text('Export as SCORM');
-              // console.log(response.responseText);
+              console.log(response.responseText);
               alert('An error occurred. Please try again.');
             }
 
