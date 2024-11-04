@@ -1,79 +1,71 @@
-// webpack.config.js
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = (env, argv) => {
-    const isProduction = argv.mode === 'production';
+module.exports = {
+    entry: './assets/js/core/VMMScorm.js',
 
-    return {
-        entry: './assets/index.js',
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: 'js/[name].[contenthash].js',
-            clean: true
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/,
-                    exclude: /node_modules/,
-                    use: 'babel-loader'
-                },
-                {
-                    test: /\.(sa|sc|c)ss$/,
-                    use: [
-                        MiniCssExtractPlugin.loader,
-                        'css-loader',
-                        'sass-loader'
-                    ]
-                },
-                {
-                    test: /\.(png|jpg|gif|svg)$/,
-                    type: 'asset',
-                    generator: {
-                        filename: 'images/[hash][ext][query]'
-                    }
-                },
-                {
-                    test: /\.html$/,
-                    type: 'asset/source'
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'js/[name].js',
+        clean: true,
+        assetModuleFilename: 'assets/[hash][ext][query]'
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
                 }
-            ]
-        },
-        plugins: [
-            new MiniCssExtractPlugin({
-                filename: 'css/[name].[contenthash].css'
-            }),
-            new HtmlWebpackPlugin({
-                template: './templates/index.html',
-                inject: true
-            }),
-            new CopyWebpackPlugin({
-                patterns: [
+            },
+            {
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
                     {
-                        from: 'assets/templates',
-                        to: 'templates'
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: true
+                        }
                     },
                     {
-                        from: 'assets/static',
-                        to: 'static'
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: true,
+                            additionalData: `
+                                $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+                            `
+                        }
                     }
                 ]
-            })
-        ],
-        optimization: {
-            splitChunks: {
-                chunks: 'all',
-                cacheGroups: {
-                    vendor: {
-                        test: /[\\/]node_modules[\\/]/,
-                        name: 'vendors',
-                        chunks: 'all'
-                    }
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf|svg)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'webfonts/[name][ext]'
                 }
             }
+        ]
+    },
+
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].css'
+        })
+    ],
+
+    resolve: {
+        extensions: ['.js', '.scss', '.css'],
+        alias: {
+            '@': path.resolve(__dirname, 'assets'),
+            '@js': path.resolve(__dirname, 'assets/js'),
+            '@scss': path.resolve(__dirname, 'assets/scss'),
+            '@core': path.resolve(__dirname, 'assets/js/core'),
+            '@elementor': path.resolve(__dirname, 'assets/js/elementor'),
+            '@utils': path.resolve(__dirname, 'assets/js/utils')
         }
-    };
+    }
 };

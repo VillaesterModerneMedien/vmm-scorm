@@ -5,14 +5,16 @@ const path = require('path');
 
 module.exports = merge(common, {
     mode: 'development',
+    devtool: 'inline-source-map',
+
     output: {
         path: path.resolve(__dirname, '../../dist'),
-        filename: 'js/vmm-scorm.js'
+        filename: 'js/[name].js'
     },
-    devtool: 'inline-source-map',
-    watch: true,
+
     watchOptions: {
-        ignored: /node_modules/,
-        poll: 1000
+        aggregateTimeout: 300,
+        poll: 1000,
+        ignored: /node_modules/
     }
 });

@@ -1,0 +1,11 @@
+// assets/scss/main.scss
+
+// Base Styles
+@import "base/colors";    // Farbdefinitionen
+@import "base/style";     // Grundlegende Styles
+
+// Components
+@import "components/dialog";    // Dialog/Modal Styles
+@import "components/elcourse";  // Elcourse Komponenten Styles
+@import "components/fitvids";   // Fitvids/Video Styles
+@import "components/snc";       // SNC Script Styles

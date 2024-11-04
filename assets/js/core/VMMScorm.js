@@ -1,4 +1,6 @@
 // assets/js/core/VMMScorm.js
+import '@scss/main.scss';
+
 class VMMScorm {
     constructor() {
         this.initialized = false;
@@ -8,17 +10,11 @@ class VMMScorm {
             dependencies: {
                 dialog: false,
                 elcourse: false,
-                fitvids: false,
-                snc: false
+                fitvids: false
             }
         };
 
         this.modules = new Map();
-        this.state = {
-            isReady: false,
-            currentPage: null,
-            sessionData: this.initLocalSession()
-        };
 
         if (this.config.autoInit) {
             this.init();
@@ -30,173 +26,58 @@ class VMMScorm {
 
         try {
             console.log('Initializing VMMScorm...');
-
-            // Initialize core functionality
-            await this.initCore();
-
-            // Load required modules
             await this.loadModules();
-
-            // Set up event listeners
             this.setupEventListeners();
 
             this.initialized = true;
-            this.state.isReady = true;
-
-            // Trigger ready event
-            window.dispatchEvent(new CustomEvent('vmmscorm:ready'));
-
             console.log('VMMScorm initialized successfully');
         } catch (error) {
             console.error('Failed to initialize VMMScorm:', error);
-            throw error;
-        }
-    }
-
-    // Utility functions to replace jQuery selectors
-    $(selector, context = document) {
-        return context.querySelector(selector);
-    }
-
-    $$(selector, context = document) {
-        return Array.from(context.querySelectorAll(selector));
-    }
-
-    // Event delegation helper
-    delegate(element, eventType, selector, handler) {
-        element.addEventListener(eventType, event => {
-            const target = event.target.closest(selector);
-            if (target && element.contains(target)) {
-                handler.call(target, event);
-            }
-        });
-    }
-
-    // DOM Ready replacement for jQuery's $(document).ready()
-    onReady(fn) {
-        if (document.readyState !== 'loading') {
-            fn();
-        } else {
-            document.addEventListener('DOMContentLoaded', fn);
-        }
-    }
-
-    async initCore() {
-        // Load bundled templates
-        await this.loadBundledTemplates();
-
-        // Initialize page tracking
-        this.initPageTracking();
-
-        // Initialize templates if needed
-        if (this.$('[data-template]')) {
-            await this.initTemplates();
         }
     }
 
     async loadModules() {
+        // Detect required modules
         this.detectRequiredModules();
 
-        const moduleLoaders = {
-            dialog: () => import('./elements/Dialog'),
-            elcourse: () => import('./elements/Elcourse'),
-            fitvids: () => import('./elements/Fitvids'),
-            snc: () => import('./elements/Snc')
-        };
+        // Load required modules dynamically
+        const modulePromises = [];
 
-        const loadPromises = Object.entries(this.config.dependencies)
-            .filter(([_, isRequired]) => isRequired)
-            .map(([name]) => this.loadModule(name, moduleLoaders[name]));
+        if (this.config.dependencies.dialog) {
+            modulePromises.push(
+                import('@elementor/elements/Dialog')
+                    .then(module => this.modules.set('dialog', new module.default()))
+            );
+        }
 
-        await Promise.all(loadPromises);
+        if (this.config.dependencies.elcourse) {
+            modulePromises.push(
+                import('@elementor/elements/Elcourse')
+                    .then(module => this.modules.set('elcourse', new module.default()))
+            );
+        }
+
+        if (this.config.dependencies.fitvids) {
+            modulePromises.push(
+                import('@elementor/elements/Fitvids')
+                    .then(module => this.modules.set('fitvids', new module.default()))
+            );
+        }
+
+        await Promise.all(modulePromises);
     }
 
     detectRequiredModules() {
-        this.config.dependencies = {
-            dialog: !!this.$('[data-dialog]'),
-            elcourse: !!this.$('[data-elcourse]'),
-            fitvids: !!this.$('video, iframe[src*="youtube"], iframe[src*="vimeo"]'),
-            snc: !!this.$('[data-snc]')
-        };
+        this.config.dependencies.dialog = !!document.querySelector('[data-dialog]');
+        this.config.dependencies.elcourse = !!document.querySelector('[data-elcourse]');
+        this.config.dependencies.fitvids = !!document.querySelector('video, iframe[src*="youtube"], iframe[src*="vimeo"]');
     }
 
     setupEventListeners() {
-        // Example of event delegation
-        this.delegate(document, 'click', '[data-action]', event => {
-            const action = event.target.dataset.action;
-            if (typeof this[action] === 'function') {
-                this[action](event);
-            }
-        });
-
-        // Custom event handling
-        window.addEventListener('vmmscorm:templateLoad', event => {
+        document.addEventListener('DOMContentLoaded', () => {
             this.detectRequiredModules();
             this.loadModules();
         });
-    }
-
-    // AJAX replacement using fetch
-    async fetchData(url, options = {}) {
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('Fetch error:', error);
-            throw error;
-        }
-    }
-
-    // Animation helper (replacing jQuery animations)
-    animate(element, keyframes, options) {
-        return element.animate(keyframes, {
-            duration: 300, // Default duration
-            easing: 'ease', // Default easing
-            ...options
-        }).finished;
-    }
-
-    // DOM manipulation helpers
-    addClass(element, className) {
-        element.classList.add(className);
-    }
-
-    removeClass(element, className) {
-        element.classList.remove(className);
-    }
-
-    toggleClass(element, className) {
-        element.classList.toggle(className);
-    }
-
-    // Storage helpers
-    setLocalData(key, value) {
-        try {
-            localStorage.setItem(`vmmscorm_${key}`, JSON.stringify(value));
-        } catch (e) {
-            console.error('Storage error:', e);
-        }
-    }
-
-    getLocalData(key) {
-        try {
-            const item = localStorage.getItem(`vmmscorm_${key}`);
-            return item ? JSON.parse(item) : null;
-        } catch (e) {
-            console.error('Storage error:', e);
-            return null;
-        }
     }
 }
 

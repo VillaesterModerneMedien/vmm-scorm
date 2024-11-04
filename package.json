@@ -9,14 +9,24 @@
     "analyze": "webpack --mode production --analyze"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.6",
-    "@babel/preset-env": "^7.23.6",
-    "babel-loader": "^9.1.3",
-    "webpack": "^5.89.0",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "^7.0.0",
+    "html-webpack-plugin": "^5.6.3",
+    "mini-css-extract-plugin": "^2.9.2",
+    "sass": "^1.80.6",
+    "sass-loader": "^16.0.3",
+    "terser-webpack-plugin": "^5.3.10",
+    "webpack": "^5.96.1",
+    "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4",
-    "webpack-bundle-analyzer": "^4.10.1"
+    "webpack-merge": "^6.0.1"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.6.0",
     "jquery": "^3.7.1"
   }
 }
