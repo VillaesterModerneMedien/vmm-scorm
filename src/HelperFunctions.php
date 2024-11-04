@@ -178,7 +178,6 @@ if ( ! function_exists( 'vmm_get_scorm_html' ) ) {
     <script src="../js/fitvids.js"></script>
     <script src="../js/essens.js"></script>
     <script src="../js/snc-script.min.js"></script>
-    <script src="../js/elcourse.min.js"></script>
     <script src="../js/elwpf.min.js"></script>
     <script src="../js/vmm-public.js"></script>
   </body>

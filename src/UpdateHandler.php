@@ -249,7 +249,6 @@ private function generate_single_lession_scorm_manifest($lesson_id, $lesson_slug
           <file href="../js/fitvids.js"/>
           <file href="../js/essens.js"/>
           <file href="../js/snc-script.min.js"/>
-          <file href="../js/elcourse.min.js"/>
           <file href="../js/elwpf.min.js"/>
           <file href="../js/VMM-public.js"/>
           <!-- Images and Videos Links -->

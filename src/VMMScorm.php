@@ -36,7 +36,18 @@ class VMMScorm {
 	 */
 	public function __construct() {
 
-    add_action('plugins_loaded', [$this, 'init'], 0);
+        // Define plugin constants
+        define('VMM_PATH', untrailingslashit(plugin_dir_path(dirname(__FILE__))));
+        define('VMM_URI', untrailingslashit(plugin_dir_url(dirname(__FILE__))));
+        define( 'VMM_PLUGIN_VERSION', '1.0.0' );
+        define( 'VMM_PLUGIN_MODE', 'prod' ); // prod or dev
+        define( 'VMM_BUILD_PATH', untrailingslashit( VMM_PATH . '/dist' ) );
+        define( 'VMM_BUILD_URL', untrailingslashit( VMM_URI . '/dist' ) );
+        define( 'VMM_IMAGE_URL', untrailingslashit( VMM_BUILD_URL . '/img' ) );
+        define( 'VMM_CSS_URL', untrailingslashit( VMM_BUILD_URL . '/css' ) );
+        define( 'VMM_JS_URL', untrailingslashit( VMM_BUILD_URL . '/js' ) );
+
+        add_action('plugins_loaded', [$this, 'init'], 0);
 
 	}
 
@@ -57,11 +68,18 @@ class VMMScorm {
             }
         }
 
-        $distribution_dir = VMM_BUILD_PATH . '/dist';
+        $distribution_dir = VMM_BUILD_PATH;
         $dist_css_dir = $distribution_dir . '/css';
         $dist_js_dir = $distribution_dir . '/js';
         $export_css_dir = $scorm_exports_dir. '/css';
         $export_js_dir = $scorm_exports_dir. '/js';
+        $assets_dir = VMM_PATH. '/assets';
+        $assets_js_dir = $assets_dir. '/js';
+        $export_assets_dir = $scorm_exports_dir. '/js';
+
+        if (!file_exists($export_assets_dir)) {
+            $this->copy_directory($assets_js_dir, $export_js_dir);
+        }
 
         if( !file_exists( $export_css_dir ) ) {
           $this->copy_directory($dist_css_dir, $export_css_dir);
@@ -118,22 +136,10 @@ class VMMScorm {
 	 */
 	public function init() {
 
-        // Define plugin constants
-        define('VMM_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
-        define('VMM_URI', untrailingslashit(plugin_dir_url(__FILE__)));
-        define( 'VMM_PLUGIN_VERSION', '1.0.0' );
-        define( 'VMM_PLUGIN_MODE', 'prod' ); // prod or dev
-        define( 'VMM_BUILD_PATH', untrailingslashit( VMM_PATH . '/build' ) );
-        define( 'VMM_BUILD_URL', untrailingslashit( VMM_URI . '/build' ) );
-        define( 'VMM_IMAGE_URL', untrailingslashit( VMM_BUILD_URL . '/img' ) );
-        define( 'VMM_CSS_URL', untrailingslashit( VMM_BUILD_URL . '/css' ) );
-        define( 'VMM_JS_URL', untrailingslashit( VMM_BUILD_URL . '/js' ) );
-
-
-        require_once VMM_PATH . '/Assets.php';
-        require_once VMM_PATH . '/UpdateHandler.php';
-        require_once VMM_PATH . '/HelperFunctions.php';
-        require_once VMM_PATH . '/TemplatePages.php';
+        require_once VMM_PATH . '/src/Assets.php';
+        require_once VMM_PATH . '/src/UpdateHandler.php';
+        require_once VMM_PATH . '/src/HelperFunctions.php';
+        require_once VMM_PATH . '/src/TemplatePages.php';
 
         require_once ABSPATH . 'wp-includes/pluggable.php';
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';

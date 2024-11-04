@@ -9,7 +9,6 @@ class VMMScorm {
             autoInit: true,
             dependencies: {
                 dialog: false,
-                elcourse: false,
                 fitvids: false
             }
         };
@@ -50,12 +49,6 @@ class VMMScorm {
             );
         }
 
-        if (this.config.dependencies.elcourse) {
-            modulePromises.push(
-                import('@elementor/elements/Elcourse')
-                    .then(module => this.modules.set('elcourse', new module.default()))
-            );
-        }
 
         if (this.config.dependencies.fitvids) {
             modulePromises.push(
@@ -69,7 +62,6 @@ class VMMScorm {
 
     detectRequiredModules() {
         this.config.dependencies.dialog = !!document.querySelector('[data-dialog]');
-        this.config.dependencies.elcourse = !!document.querySelector('[data-elcourse]');
         this.config.dependencies.fitvids = !!document.querySelector('video, iframe[src*="youtube"], iframe[src*="vimeo"]');
     }
 
