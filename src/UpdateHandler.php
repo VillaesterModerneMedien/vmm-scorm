@@ -2,12 +2,12 @@
 /**
  * This class is about
  *
- * @package Ecom Helper
+ * @package VMM Helper
  * @version 1.0.0
  * @license GPL-2.0+
  */
 
-namespace EcomHelper;
+namespace VMMHelper;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,85 +42,83 @@ class UpdateHandler {
 
 	public function hooks() {
 
-    add_filter('post_row_actions', [$this, 'add_custom_button_to_post_row_actions'], 10, 2);
-    
-    add_action('wp_ajax_export_scorm', [$this, 'export_scorm']);
-
-    add_action('admin_footer', [$this, 'add_custom_script_to_admin_footer']);
+        add_filter('post_row_actions', [$this, 'add_custom_button_to_post_row_actions'], 10, 2);
+        add_action('wp_ajax_export_scorm', [$this, 'export_scorm']);
+        add_action('admin_footer', [$this, 'add_custom_script_to_admin_footer']);
 
   }
 
   public function export_scorm(){
- 
-    // Ensure this script is only accessible via AJAX
-    if (!defined('DOING_AJAX') || !DOING_AJAX) {
-        wp_die('Access denied');
-    }
-    
-    // Security check
-    check_ajax_referer('ajax_nonce', 'security', false) || wp_die('Security check failed');
-    
-    // Required fields
-    $required_fields = ['post_type', 'post_id'];
-    
-    foreach ($required_fields as $field) {
-        if (empty($_POST[$field])) {
-            wp_send_json_error(__('Something went wrong. Please try again later.', 'ecom-scorm'));
-            exit;
+
+        // Ensure this script is only accessible via AJAX
+        if (!defined('DOING_AJAX') || !DOING_AJAX) {
+            wp_die('Access denied');
         }
-    }
-    
-    // Sanitize inputs
-    $lesson_type = sanitize_text_field($_POST['post_type']);
-    $lesson_id = absint($_POST['post_id']);
-    $lesson = get_post($lesson_id);
-    $lesson_title = $lesson->post_title;
-    $lesson_slug = $lesson->post_name;
-    $lesson_content = $lesson->post_content;
-    $course_id = absint($_POST['course_id'] ?? 0);
 
-    // Clear the export directory before creating new files
-    $upload_dir = wp_upload_dir();
-    $export_directory = "{$upload_dir['basedir']}/scorm_exports";
+        // Security check
+        check_ajax_referer('ajax_nonce', 'security', false) || wp_die('Security check failed');
 
-    // Clear the scorm_exports directory excluding css, js, images,videos and uncanny-snc
-    ecom_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'uncanny-snc']);
+        // Required fields
+        $required_fields = ['post_type', 'post_id'];
 
-    // Clear the contents of uncanny-snc directory but keep the directory itself
-    $uncanny_snc_directory = "$export_directory/uncanny-snc";
-    $images_directory = "$export_directory/images";
-    $videos_directory = "$export_directory/videos";
-    ecom_clear_directory($uncanny_snc_directory);
-    ecom_clear_directory($images_directory);
-    ecom_clear_directory($videos_directory);
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                wp_send_json_error(__('Something went wrong. Please try again later.', 'VMM-scorm'));
+                exit;
+            }
+        }
 
-    $html__content = ecom_get_scorm_html($lesson_id, $lesson_content);
+        // Sanitize inputs
+        $lesson_type = sanitize_text_field($_POST['post_type']);
+        $lesson_id = absint($_POST['post_id']);
+        $lesson = get_post($lesson_id);
+        $lesson_title = $lesson->post_title;
+        $lesson_slug = $lesson->post_name;
+        $lesson_content = $lesson->post_content;
+        $course_id = absint($_POST['course_id'] ?? 0);
 
-    if( $html__content ) $html_content = ecom_convert_vc_sync_to_iframe($lesson_id, $html__content);
+        // Clear the export directory before creating new files
+        $upload_dir = wp_upload_dir();
+        $export_directory = "{$upload_dir['basedir']}/scorm_exports";
 
-    $images_videos_files = [$lesson_id => $html_content[0]];
+        // Clear the scorm_exports directory excluding css, js, images,videos and uncanny-snc
+        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'uncanny-snc']);
 
-    $this->create_html_file($html_content[1], 'lessons/' . $lesson_slug . '.html', $export_directory);
- 
-    // Generate SCORM manifest
-    $scorm_manifest = $this->generate_single_lession_scorm_manifest($lesson_id, $lesson_slug, $lesson_title, $images_videos_files);
-    
-    // Save the SCORM manifest
-    $manifest_path = $export_directory . '/imsmanifest.xml';
-  
-    file_put_contents($manifest_path, $scorm_manifest);
+        // Clear the contents of uncanny-snc directory but keep the directory itself
+        $uncanny_snc_directory = "$export_directory/uncanny-snc";
+        $images_directory = "$export_directory/images";
+        $videos_directory = "$export_directory/videos";
+        VMM_clear_directory($uncanny_snc_directory);
+        VMM_clear_directory($images_directory);
+        VMM_clear_directory($videos_directory);
 
-    $destination = "$export_directory/lesson_$lesson_id.zip";
-    // Create the new SCORM package
-    $this->create_scorm_package($export_directory, $destination);
-    // Delete the imsmanifest.xml file and lessons folder
-    unlink($manifest_path);
-    $this->delete_directory($export_directory . '/lessons');
+        $html__content = VMM_get_scorm_html($lesson_id, $lesson_content);
 
-    $zip_url = "{$upload_dir['baseurl']}/scorm_exports/lesson_$lesson_id.zip";
-    // Return the URL of the ZIP file in the AJAX response
-    wp_send_json_success(['url' => $zip_url]);
-    exit;
+        if( $html__content ) $html_content = VMM_convert_vc_sync_to_iframe($lesson_id, $html__content);
+
+        $images_videos_files = [$lesson_id => $html_content[0]];
+
+        $this->create_html_file($html_content[1], 'lessons/' . $lesson_slug . '.html', $export_directory);
+
+        // Generate SCORM manifest
+        $scorm_manifest = $this->generate_single_lession_scorm_manifest($lesson_id, $lesson_slug, $lesson_title, $images_videos_files);
+
+        // Save the SCORM manifest
+        $manifest_path = $export_directory . '/imsmanifest.xml';
+
+        file_put_contents($manifest_path, $scorm_manifest);
+
+        $destination = "$export_directory/lesson_$lesson_id.zip";
+        // Create the new SCORM package
+        $this->create_scorm_package($export_directory, $destination);
+        // Delete the imsmanifest.xml file and lessons folder
+        unlink($manifest_path);
+        $this->delete_directory($export_directory . '/lessons');
+
+        $zip_url = "{$upload_dir['baseurl']}/scorm_exports/lesson_$lesson_id.zip";
+        // Return the URL of the ZIP file in the AJAX response
+        wp_send_json_success(['url' => $zip_url]);
+        exit;
 
 } // end function
 
@@ -129,8 +127,8 @@ public function add_custom_script_to_admin_footer() { ?>
 
  <script type="text/javascript">
 
- function ecom_export_scorm(el) {
-  
+ function VMM_export_scorm(el) {
+
   let _this = jQuery(el);
   let post_id = _this.attr("post_id");
   let course_id = _this.attr("course_id");
@@ -147,9 +145,9 @@ public function add_custom_script_to_admin_footer() { ?>
       'post_id' : post_id,
       'course_id' : course_id,
   },
-  
+
   dataType: "json",
-  
+
   success: function(response) {
             if (response.success) {
               var link = document.createElement('a');
@@ -174,7 +172,7 @@ public function add_custom_script_to_admin_footer() { ?>
                 } else {
                     _this.text('Export as SCORM');
                     alert('Failed to create SCORM Package. Please try again.');
-                  
+
                 }
             },
             error: function(response) {
@@ -182,11 +180,11 @@ public function add_custom_script_to_admin_footer() { ?>
               // console.log(response.responseText);
               alert('An error occurred. Please try again.');
             }
-  
+
    });
 
  } // end function
- 
+
  </script> <?php
 }
 
@@ -197,7 +195,7 @@ public function add_custom_button_to_post_row_actions($actions, $post) {
 
       // Get the course ID using LearnDash function
       $course_id = learndash_get_course_id($post->ID);
-      $export_scorm_button = '<a href="javascript:void(0)" post_id="'.$post->ID.'" course_id="'. $course_id .'" post_type="'.$post->post_type.'" onclick="ecom_export_scorm(this)">Export as SCORM</a>';
+      $export_scorm_button = '<a href="javascript:void(0)" post_id="'.$post->ID.'" course_id="'. $course_id .'" post_type="'.$post->post_type.'" onclick="VMM_export_scorm(this)">Export as SCORM</a>';
       $actions['export_scorm_button'] = $export_scorm_button;
   }
   return $actions;
@@ -221,7 +219,7 @@ private function generate_single_lession_scorm_manifest($lesson_id, $lesson_slug
         <link rel="https://api.w.org/" href="<?php echo esc_url(home_url('wp-json')); ?>"/>
         <link rel="alternate" type="application/json" href='<?php echo home_url("wp-json/wp/v2/pages/$lesson_id"); ?>'/>
     </metadata>
-  
+
       <organizations default="kompetenzSchmiedeOrg">
        <organization identifier="kompetenzSchmiedeOrg">
         <title><?php echo "SCORM Lesson from Campus Kompetenz Schmiede"; ?></title>
@@ -253,9 +251,9 @@ private function generate_single_lession_scorm_manifest($lesson_id, $lesson_slug
           <file href="../js/snc-script.min.js"/>
           <file href="../js/elcourse.min.js"/>
           <file href="../js/elwpf.min.js"/>
-          <file href="../js/ecom-public.js"/>
+          <file href="../js/VMM-public.js"/>
           <!-- Images and Videos Links -->
-           <?php 
+           <?php
            if( !empty($images_videos_files[$lesson_id]) ) {
              foreach ($images_videos_files[$lesson_id] as $file_source) {
              echo "<file href='$file_source'/>";
@@ -271,7 +269,7 @@ private function generate_single_lession_scorm_manifest($lesson_id, $lesson_slug
   }
 
   private function create_html_file($content, $filename, $export_directory) {
-        
+
     $file_path =  $export_directory . '/' . $filename;
 
     // Ensure the directory exists
@@ -309,7 +307,7 @@ public function create_scorm_package($source, $destination) {
                       $filePath = $file->getRealPath();
                       // Calculate the path relative to the $source directory
                       $relativePath = substr($filePath, strlen($source) + 1);
-                      
+
                       // Add file to the zip archive, preserving folder structure
                       $zip->addFile($filePath, $relativePath);
                   }
@@ -340,5 +338,5 @@ public function create_scorm_package($source, $destination) {
     }
     return rmdir($dir);
   }
-  
+
 } // End class UpdateHandler.
