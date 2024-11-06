@@ -5,7 +5,7 @@
   "main": "dist/vmm-scorm.js",
   "scripts": {
     "dev": "webpack --mode development --watch",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production --stats-error-details",
     "analyze": "webpack --mode production --analyze"
   },
   "devDependencies": {

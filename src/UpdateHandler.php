@@ -82,7 +82,7 @@ class UpdateHandler {
         $export_directory = "{$upload_dir['basedir']}/scorm_exports";
 
         // Clear the scorm_exports directory excluding css, js, images,videos and uncanny-snc
-        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'uncanny-snc']);
+        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'pdfs', 'uncanny-snc', 'webfonts']);
 
         // Clear the contents of uncanny-snc directory but keep the directory itself
         $uncanny_snc_directory = "$export_directory/uncanny-snc";
@@ -233,34 +233,18 @@ private function generate_single_lession_scorm_manifest($lesson_id, $lesson_slug
        <resource identifier="<?php echo 'lesson_' . $lesson_id; ?>" type="webcontent" adlcp:scormtype="sco" href="<?php echo 'lessons/' . $lesson_slug . '.html'; ?>">
           <file href="<?php echo 'lessons/' . $lesson_slug . '.html'; ?>"/>
           <!-- CSS Links -->
-          <file href="../css/colors.min.css"/>
-          <file href="../css/icons.min.css"/>
-          <file href="../css/style.min.css"/>
-          <file href="../css/custom.min.css"/>
+          <file href="../css/vmm-scorm.css"/>
+
           <!-- JS Links -->
-          <file href="../js/jquery.min.js"/>
-          <file href="../js/jquery-migrate.min.js"/>
-          <file href="../js/jquery-query.min.js"/>
-          <file href="../js/jquery-cookie.min.js"/>
-          <file href="../js/jquery-scroll-to.min.js"/>
-          <file href="../js/dialog.min.js"/>
-          <file href="../js/elessens.min.js"/>
-          <file href="../js/jquery.mask.js"/>
-          <file href="../js/fitvids.js"/>
-          <file href="../js/essens.js"/>
-          <file href="../js/snc-script.min.js"/>
-          <file href="../js/elwpf.min.js"/>
-          <file href="../js/VMM-public.js"/>
-          <!-- Images and Videos Links -->
+          <file href="../js/vmm-scorm.js"/>
+
            <?php
-           if( !empty($images_videos_files[$lesson_id]) ) {
-             foreach ($images_videos_files[$lesson_id] as $file_source) {
-             echo "<file href='$file_source'/>";
-             }
+           if(!empty($media_files_log[$lesson_id])) {
+               foreach ($media_files_log[$lesson_id] as $file_source) {
+                   echo "<file href='$file_source'/>";
+               }
            } ?>
-          <!-- CDN Links -->
-          <file href="https://fonts.googleapis.com/css?family=Open+Sans%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=swap&amp;ver=6.5.4"/>
-          <file href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+
         </resource>
      </resources>
     </manifest><?php
@@ -287,7 +271,16 @@ public function create_scorm_package($source, $destination) {
       $zip->addFile($source . '/imsmanifest.xml', 'imsmanifest.xml');
 
       // Define folders to include in the ZIP
-      $folders = ['lessons', 'css', 'js', 'images', 'videos', 'uncanny-snc'];
+      $folders = [
+          'lessons',
+          'css',
+          'js',
+          'images',
+          'videos',
+          'pdfs',
+          'uncanny-snc',
+          'webfonts'
+      ];
 
       foreach ($folders as $folder) {
           $folderPath = $source . '/' . $folder . '/';

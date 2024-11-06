@@ -59,6 +59,7 @@ class VMMScorm {
             $scorm_exports_dir,
             $scorm_exports_dir . "/images",
             $scorm_exports_dir . "/videos",
+            $scorm_exports_dir . "/pdfs",
             $scorm_exports_dir . "/uncanny-snc"
         ];
 
@@ -71,14 +72,13 @@ class VMMScorm {
         $distribution_dir = VMM_BUILD_PATH;
         $dist_css_dir = $distribution_dir . '/css';
         $dist_js_dir = $distribution_dir . '/js';
-        $export_css_dir = $scorm_exports_dir. '/css';
-        $export_js_dir = $scorm_exports_dir. '/js';
-        $assets_dir = VMM_PATH. '/assets';
-        $assets_js_dir = $assets_dir. '/js';
-        $export_assets_dir = $scorm_exports_dir. '/js';
+        $dist_fonts_dir = $distribution_dir . '/webfonts';
+        $export_css_dir = $scorm_exports_dir . '/css';
+        $export_js_dir = $scorm_exports_dir . '/js';
+        $export_fonts_dir = $scorm_exports_dir . '/webfonts';
 
-        if (!file_exists($export_assets_dir)) {
-            $this->copy_directory($assets_js_dir, $export_js_dir);
+        if( !file_exists( $export_fonts_dir ) ) {
+          $this->copy_directory($dist_fonts_dir, $export_fonts_dir);
         }
 
         if( !file_exists( $export_css_dir ) ) {

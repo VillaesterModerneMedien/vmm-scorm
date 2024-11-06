@@ -5,8 +5,13 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
+console.log('Loading webpack.prod.js');
+
+
 module.exports = merge(common, {
     mode: 'production',
+    stats: 'errors-only',
+
     output: {
         path: path.resolve(__dirname, '../../dist'),
         filename: 'js/vmm-scorm.min.js'

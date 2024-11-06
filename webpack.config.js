@@ -1,48 +1,52 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = {
-    entry: './assets/js/core/VMMScorm.js',
+console.log('Loading webpack.config.js');
 
+module.exports = {
+    entry: {
+        'vmm-scorm': path.resolve(__dirname, 'assets/js/core/VMMScorm.js')
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'js/[name].js',
         clean: true,
+        publicPath: '../',
         assetModuleFilename: 'assets/[hash][ext][query]'
     },
-
-    stats: {
-        errorDetails: true
-    },
-
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader'
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
                 }
             },
             {
-                test: /\.(sa|sc|c)ss$/,
+                test: /\.scss$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true
-                        }
-                    },
+                    'css-loader',
                     {
                         loader: 'sass-loader',
                         options: {
-                            sourceMap: true,
-                            additionalData: `
-                                $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
-                            `
+                            sassOptions: {
+                                includePaths: ['node_modules']
+                            },
+                            additionalData: `$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";`
                         }
                     }
+                ]
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader'
                 ]
             },
             {
@@ -54,13 +58,12 @@ module.exports = {
             }
         ]
     },
-
     plugins: [
         new MiniCssExtractPlugin({
             filename: 'css/[name].css'
-        })
-    ],
+        }),
 
+    ],
     resolve: {
         extensions: ['.js', '.scss', '.css'],
         alias: {

@@ -1,5 +1,9 @@
 // assets/js/core/VMMScorm.js
 import '@scss/main.scss';
+import 'typeface-open-sans/files/open-sans-latin-400.woff2';
+import 'typeface-open-sans/files/open-sans-latin-700.woff2';
+import '@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2';
+import '@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2';
 
 class VMMScorm {
     constructor() {
@@ -48,7 +52,6 @@ class VMMScorm {
                     .then(module => this.modules.set('dialog', new module.default()))
             );
         }
-
 
         if (this.config.dependencies.fitvids) {
             modulePromises.push(
