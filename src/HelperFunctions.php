@@ -1,7 +1,5 @@
 <?php
 namespace VMMHelper;
-//TODO: srcsets behandeln -> löschen, oder runterladen/verlinken(siehe image src update)
-    //TODO: Alle ordner vor neuem export leeren(Lesson spezifischer inhalt, also medien)
 
 
 if (!function_exists('vmm_get_filename_with_extension')) {
@@ -285,6 +283,10 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
 
             $img->setAttribute('src', "../images/$image_filename");
+
+            // Remove srcset and sizes attributes TODO: Add support for srcset and sizes
+            $img->removeAttribute('srcset');
+            $img->removeAttribute('sizes');
         }
 
         // Extract and replace video URLs
@@ -376,7 +378,12 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
         }
 
+        $dom = UIkitHelper::convertElementorToUIkit($dom);
+
         $new_html_content = $dom->saveHTML();
+
+
+
         return [$images_videos_log, $new_html_content];
     }
 

@@ -72,7 +72,9 @@ module.exports = {
             '@scss': path.resolve(__dirname, 'assets/scss'),
             '@core': path.resolve(__dirname, 'assets/js/core'),
             '@elementor': path.resolve(__dirname, 'assets/js/elementor'),
-            '@utils': path.resolve(__dirname, 'assets/js/utils')
+            '@utils': path.resolve(__dirname, 'assets/js/utils'),
+            '@custom-uikit': path.resolve(__dirname, 'assets/js/uikit'),
+            'uikit': path.resolve(__dirname, 'node_modules/uikit')
         }
     }
 };

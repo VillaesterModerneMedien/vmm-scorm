@@ -140,6 +140,8 @@ class VMMScorm {
         require_once VMM_PATH . '/src/UpdateHandler.php';
         require_once VMM_PATH . '/src/HelperFunctions.php';
         require_once VMM_PATH . '/src/TemplatePages.php';
+        require_once VMM_PATH . '/src/UIkitHelper.php';
+
 
         require_once ABSPATH . 'wp-includes/pluggable.php';
 		include_once ABSPATH . 'wp-admin/includes/plugin.php';

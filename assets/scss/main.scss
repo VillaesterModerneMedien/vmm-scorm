@@ -1,5 +1,3 @@
-// assets/scss/main.scss
-
 // Base Styles
 @use "base/colors";    // Farbdefinitionen
 @use "base/style";     // Grundlegende Styles
@@ -9,3 +7,5 @@
 @use "components/elcourse";  // Elcourse Komponenten Styles
 @use "components/fitvids";   // Fitvids/Video Styles
 @use "components/snc";       // SNC Script Styles
+@use "components/uikit";   // UIKit
+

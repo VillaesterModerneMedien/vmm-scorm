@@ -1,0 +1,27 @@
+@import "uikit/src/scss/variables.scss";
+@import "uikit/src/scss/uikit.scss";
+
+.elementor-toggle
+{
+  .elementor-tab-content{
+    &[hidden] {
+      display: none;
+    }
+    &:not([hidden]){
+      display: block;
+    }
+  }
+  .elementor-tab-title{
+    width:100%;
+  }
+  .uk-accordion-title {
+    display: block;
+    font-size: unset;
+    line-height: 1;
+    color: unset;
+  }
+
+  &.uk-accordion > :nth-child(n+2) {
+    margin-top: unset;
+  }
+}
