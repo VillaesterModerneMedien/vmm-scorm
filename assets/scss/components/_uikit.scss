@@ -20,8 +20,31 @@
     line-height: 1;
     color: unset;
   }
-
   &.uk-accordion > :nth-child(n+2) {
     margin-top: unset;
+  }
+}
+.uk-slider{
+  .uk-slider-items{
+    > div{
+      padding-left:0;
+      @media(max-width:1200px){
+        margin-left:35px;
+      }
+      margin-left:40px;
+    }
+  }
+  a{
+    &.uk-slidenav{
+      z-index: 99999;
+      color: #EC6707;
+      svg{
+        width:11px;
+        polyline{
+          stroke-width: 3px;
+        }
+      }
+
+    }
   }
 }
