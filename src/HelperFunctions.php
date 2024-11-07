@@ -332,13 +332,11 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             $text = trim($p->textContent);
             if (strpos($text, '[vc_snc embed_type') === 0) {
                 $shortcodes = preg_replace('/[\[\]]/', '', $p->textContent);
-                $shortcode = str_replace(['″', '"'], '"', trim($shortcodes));
-
+                $shortcode = str_replace(['"', '"', '″', '"', '”'], '"', trim($shortcodes));
                 $embedType = $itemId = $itemName = $width = $height = $frameborder = $src = '';
 
-                // Use regular expressions to extract attributes
                 preg_match('/embed_type="([^"]*)"/', $shortcode, $embedTypeMatch);
-                preg_match('/item_id="([^"]*)"/', $shortcode, $itemIdMatch);
+                preg_match('/item_id="(\d+)"/', $shortcode, $itemIdMatch);
                 preg_match('/item_name="([^"]*)"/', $shortcode, $itemNameMatch);
                 preg_match('/width="([^"]*)"/', $shortcode, $widthMatch);
                 preg_match('/height="([^"]*)"/', $shortcode, $heightMatch);
@@ -378,8 +376,8 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
         }
 
-        $dom = UIkitHelper::convertElementorToUIkit($dom);
 
+        $dom = UIkitHelper::convertElementorToUIkit($dom);
         $new_html_content = $dom->saveHTML();
 
 

@@ -1,8 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-console.log('Loading webpack.config.js');
-
 module.exports = {
     entry: {
         'vmm-scorm': path.resolve(__dirname, 'assets/js/core/VMMScorm.js')
