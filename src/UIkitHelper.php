@@ -9,11 +9,15 @@ class UIkitHelper {
         $xpath = new \DOMXPath($dom);
         $toggles = $xpath->query("//div[@data-widget_type='toggle.default']");
         $sliders = $xpath->query("//div[contains(@class, 'elementor-main-swiper')]");
+        $videos = $xpath->query("//div[contains(@class, 'elementor-widget-video')]");
+
+        if ($videos->length > 0) {
+            self::convertVideos($xpath, $videos, $dom);
+        }
 
         if ($toggles->length > 0) {
             self::convertToggles($xpath, $toggles);
         }
-
 
         if ($sliders->length > 0) {
             self::convertSliders($xpath, $sliders, $dom);
@@ -98,6 +102,33 @@ class UIkitHelper {
 
         }
     }
+
+    private static function convertVideos($xpath, $videos, $dom) {
+        foreach ($videos as $video) {
+            // Create new video element
+            $newVideo = $dom->createElement('video');
+
+            // Get video URL and poster from original element
+            $lightboxData = $xpath->query(".//div[@data-elementor-open-lightbox]", $video)->item(0);
+            $lightboxSettings = json_decode(html_entity_decode($lightboxData->getAttribute('data-elementor-lightbox')), true);
+            $videoUrl = $lightboxSettings['url'];
+
+            // Get thumbnail for poster
+            $thumbnail = $xpath->query(".//img", $video)->item(0);
+            $thumbnailSrc = $thumbnail->getAttribute('src');
+
+            // Set attributes
+            $newVideo->setAttribute('src', $videoUrl);
+            $newVideo->setAttribute('controls', '');
+            $newVideo->setAttribute('class', 'el-image');
+            $newVideo->setAttribute('poster', $thumbnailSrc);
+
+            // Replace original element with new video
+            $video->parentNode->replaceChild($newVideo, $video);
+        }
+    }
+
+
 
 
 

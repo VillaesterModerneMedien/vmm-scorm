@@ -2,11 +2,39 @@
 namespace VMMHelper;
 
 
+if (!function_exists('vmm_clean_url')) {
+    function vmm_clean_url($url)
+    {
+        // Remove query parameters
+        $url_parts = explode('?', $url);
+        return $url_parts[0];
+    }
+}
+
 if (!function_exists('vmm_get_filename_with_extension')) {
 
     function vmm_get_filename_with_extension($url)
     {
+        $url = vmm_clean_url($url);
+        if (strpos($url, 'data:') === 0) {
+            // Extract mime type
+            preg_match('/data:(.*?);base64,/', $url, $matches);
+            $mime = $matches[1];
 
+            // Map mime types to extensions
+            $extensions = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/gif' => 'gif',
+                'image/svg+xml' => 'svg',
+                'video/mp4' => 'mp4',
+                'audio/mpeg' => 'mp3',
+                'application/pdf' => 'pdf'
+            ];
+
+            $extension = $extensions[$mime] ?? 'bin';
+            return 'file-' . uniqid() . '.' . $extension;
+        }
         $path = parse_url($url, PHP_URL_PATH);
         $fileInfo = pathinfo($path);
         return $fileInfo['basename'];
@@ -177,6 +205,7 @@ ob_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo get_the_title($post_id); ?></title>
 
+    <link rel="stylesheet" href="/Users/mariohewera/Desktop/phpstormprojekte/Summer/wp-content/plugins/vmm-scorm/dist/css/vmm-scorm.css">
     <link rel="stylesheet" href="../css/vmm-scorm.css">
     <script src="../js/vmm-scorm.js"></script>
 
@@ -210,16 +239,30 @@ return ob_get_clean();
 if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
 
     function vmm_convert_vc_sync_to_iframe($lesson_id, $htmlContent) {
+        ini_set('max_execution_time', 300); // 5 minutes
+        ini_set('memory_limit', '512M');    // 512MB memory limit
+        set_time_limit(300);                // Alternative way to set time limit
         $dom = new \DOMDocument;
-        @$dom->loadHTML($htmlContent, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
-
+        @$dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+        
         $upload_dir = wp_upload_dir();
         $imageSources = [];
         $videoSources = [];
         $pdfSources = [];
         $replacementLinks = [];
         $filteredContents = [];
-        $images_videos_log = [];
+        $media_files_log = [];
+        
+
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ],
+            'http' => [
+                'ignore_errors' => true
+            ]
+        ]);
 
         // Get all relevant elements
         $elementsWithStyle = $dom->getElementsByTagName('*');
@@ -228,6 +271,13 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
         $pElements = $dom->getElementsByTagName('p');
         $linkElements = $dom->getElementsByTagName('a');
         $styleElements = $dom->getElementsByTagName('style');
+        $iframes = $dom->getElementsByTagName('iframe');
+        $body = $dom->getElementsByTagName('body')->item(0);
+        $styles = $body->getElementsByTagName('link');
+        $stylesArray = [];
+        foreach ($styles as $style) {
+            $stylesArray[] = $style;
+        }
 
         // 1. Collect all URLs
         // Extract and replace background image URLs from style attributes
@@ -241,7 +291,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
                     $image_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $url);
 
                     if (!file_exists($image_export_path)) {
-                        copy($image_copy_path, $image_export_path);
+                        copy($image_copy_path, $image_export_path, $context);
                         $media_files_log[] = "../images/$image_filename";
                     }
 
@@ -256,12 +306,13 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             $styleContent = $styleElement->nodeValue;
             $backgroundUrls = vmm_extract_url_from_style($styleContent);
             foreach ($backgroundUrls as $url) {
+                $url = vmm_clean_url($url);
                 $image_filename = vmm_get_filename_with_extension($url);
                 $image_export_path = $upload_dir['basedir'] . "/scorm_exports/images/$image_filename";
                 $image_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $url);
 
                 if (!file_exists($image_export_path)) {
-                    copy($image_copy_path, $image_export_path);
+                    copy($image_copy_path, $image_export_path, $context);
                     $media_files_log[] = "../images/$image_filename";
                 }
 
@@ -278,7 +329,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             $image_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $src);
 
             if (!file_exists($image_export_path)) {
-                copy($image_copy_path, $image_export_path);
+                copy($image_copy_path, $image_export_path, $context);
                 $media_files_log[] = "../images/$image_filename";
             }
 
@@ -297,7 +348,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             $video_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $src);
 
             if (!file_exists($video_export_path)) {
-                copy($video_copy_path, $video_export_path);
+                copy($video_copy_path, $video_export_path, $context);
                 $media_files_log[] = "../videos/$video_filename";
             }
 
@@ -313,7 +364,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
                 $pdf_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $href);
 
                 if (!file_exists($pdf_export_path)) {
-                    copy($pdf_copy_path, $pdf_export_path);
+                    copy($pdf_copy_path, $pdf_export_path, $context);
                     $media_files_log[] = "../pdfs/$pdf_filename";
                 }
 
@@ -322,6 +373,45 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
         }
 
+        // Replace the entire iframe processing loop with this simpler version
+        foreach ($iframes as $iframe) {
+            $src = $iframe->getAttribute('src');
+            if ($src) {
+                // Generate unique filename for this iframe
+                $iframe_filename = 'iframe-' . uniqid() . '.html';
+                $iframe_dir = $upload_dir['basedir'] . "/scorm_exports/iframes";
+
+                // Create directory if it doesn't exist
+                if (!file_exists($iframe_dir)) {
+                    mkdir($iframe_dir, 0755, true);
+                }
+
+                // Download the HTML content
+                $iframe_content = file_get_contents($src, false, $context);
+                if ($iframe_content) {
+                    // Save the HTML file
+                    file_put_contents("$iframe_dir/$iframe_filename", $iframe_content);
+
+                    // Update iframe src to point to the downloaded file
+                    $iframe->setAttribute('src', "../iframes/$iframe_filename");
+                }
+            }
+        }
+
+        foreach ($stylesArray as $style) {
+            if ($style->getAttribute('rel') === 'stylesheet') {
+                $style_src = $style->getAttribute('href');
+                if ($style_src) {
+                    $style_content = file_get_contents($style_src, false, $context);
+                    if ($style_content) {
+                        $new_style = $dom->createElement('style');
+                        $new_style->setAttribute('type', 'text/css');
+                        $new_style->textContent = $style_content;
+                        $style->parentNode->replaceChild($new_style, $style);
+                    }
+                }
+            }
+        }
         // 2. Process and copy files
         process_media_files($imageSources, 'images', $upload_dir, $replacementLinks, $media_files_log);
         process_media_files($videoSources, 'videos', $upload_dir, $replacementLinks, $media_files_log);
@@ -376,13 +466,10 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
         }
 
-
         $dom = UIkitHelper::convertElementorToUIkit($dom);
         $new_html_content = $dom->saveHTML();
 
-
-
-        return [$images_videos_log, $new_html_content];
+        return [$media_files_log, $new_html_content];
     }
 
 

@@ -60,6 +60,7 @@ class VMMScorm {
             $scorm_exports_dir . "/images",
             $scorm_exports_dir . "/videos",
             $scorm_exports_dir . "/pdfs",
+            $scorm_exports_dir . "/iframes",
             $scorm_exports_dir . "/uncanny-snc"
         ];
 

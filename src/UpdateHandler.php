@@ -87,18 +87,20 @@ class UpdateHandler
         $export_directory = "{$upload_dir['basedir']}/scorm_exports";
 
         // Clear the scorm_exports directory excluding css, js, images,videos and uncanny-snc
-        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'pdfs', 'uncanny-snc', 'webfonts']);
+        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'pdfs', 'uncanny-snc', 'iframes', 'webfonts']);
 
         // Clear the contents of uncanny-snc directory but keep the directory itself
         $uncanny_snc_directory = "$export_directory/uncanny-snc";
         $images_directory = "$export_directory/images";
         $videos_directory = "$export_directory/videos";
         $pdfs_directory = "$export_directory/pdfs";
+        $iframes_directory = "$export_directory/iframes";
 
         vmm_clear_directory($pdfs_directory);
         VMM_clear_directory($uncanny_snc_directory);
         VMM_clear_directory($images_directory);
         VMM_clear_directory($videos_directory);
+        VMM_clear_directory($iframes_directory);
 
         $html__content = VMM_get_scorm_html($lesson_id, $lesson_content);
 
@@ -296,6 +298,7 @@ class UpdateHandler
                 'videos',
                 'pdfs',
                 'uncanny-snc',
+                'iframes',
                 'webfonts'
             ];
 
