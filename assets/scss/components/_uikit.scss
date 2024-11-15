@@ -1,18 +1,18 @@
 @import "uikit/src/scss/variables.scss";
 @import "uikit/src/scss/uikit.scss";
 
-.elementor-toggle
-{
-  .elementor-tab-content{
+.elementor-toggle,
+.elementor-accordion {
+  .elementor-tab-content {
     &[hidden] {
       display: none;
     }
-    &:not([hidden]){
+    &:not([hidden]) {
       display: block;
     }
   }
-  .elementor-tab-title{
-    width:100%;
+  .elementor-tab-title {
+    width: 100%;
   }
   .uk-accordion-title {
     display: block;
@@ -24,7 +24,11 @@
     margin-top: unset;
   }
 }
+
+
+
 .uk-slider{
+  position:relative;
   .uk-slider-items{
     > div{
       padding-left:0;
@@ -36,7 +40,7 @@
   }
   a{
     &.uk-slidenav{
-      z-index: 99999;
+      z-index: 9;
       color: #EC6707;
       svg{
         width:11px;

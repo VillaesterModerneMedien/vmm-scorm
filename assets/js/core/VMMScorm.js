@@ -17,7 +17,6 @@ class VMMScorm {
             autoInit: true,
             dependencies: {
                 dialog: false,
-                fitvids: false
             }
         };
 
@@ -57,19 +56,11 @@ class VMMScorm {
             );
         }
 
-        if (this.config.dependencies.fitvids) {
-            modulePromises.push(
-                import('@elementor/elements/Fitvids')
-                    .then(module => this.modules.set('fitvids', new module.default()))
-            );
-        }
-
         await Promise.all(modulePromises);
     }
 
     detectRequiredModules() {
         this.config.dependencies.dialog = !!document.querySelector('[data-dialog]');
-        this.config.dependencies.fitvids = !!document.querySelector('video, iframe[src*="youtube"], iframe[src*="vimeo"]');
     }
 
     setupEventListeners() {

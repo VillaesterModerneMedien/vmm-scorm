@@ -205,7 +205,6 @@ ob_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo get_the_title($post_id); ?></title>
 
-    <link rel="stylesheet" href="/Users/mariohewera/Desktop/phpstormprojekte/Summer/wp-content/plugins/vmm-scorm/dist/css/vmm-scorm.css">
     <link rel="stylesheet" href="../css/vmm-scorm.css">
     <script src="../js/vmm-scorm.js"></script>
 
@@ -217,7 +216,11 @@ ob_start();
     <div id="content" class="site-content">
         <div class="container">
             <div class="bb-grid site-content-grid">
-                <?php echo $_content; ?>
+                <div class="content-area bb-grid-cell">
+                    <main class="site-main">
+                        <?php echo $_content; ?>
+                    </main>
+                </div><!-- .content-area -->
             </div><!-- .bb-grid -->
         </div><!-- .container -->
     </div><!-- #content -->
@@ -355,7 +358,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             $video->setAttribute('src', "../videos/$video_filename");
         }
 
-        // Extract and replace PDF URLs
+        // Extract and replace PDF & lightbox images URLs
         foreach ($linkElements as $link) {
             $href = $link->getAttribute('href');
             if (is_string($href) && strpos($href, '.pdf') !== false) {
@@ -370,6 +373,20 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
 
                 // Immediately replace the href attribute
                 $link->setAttribute('href', "../pdfs/$pdf_filename");
+            }
+            if ($link->hasAttribute('data-elementor-open-lightbox') &&
+                $link->getAttribute('data-elementor-open-lightbox') === 'yes') {
+                $href = $link->getAttribute('href');
+                $image_filename = vmm_get_filename_with_extension($href);
+                $image_export_path = $upload_dir['basedir'] . "/scorm_exports/images/$image_filename";
+                $image_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $href);
+
+                if (!file_exists($image_export_path)) {
+                    copy($image_copy_path, $image_export_path, $context);
+                    $media_files_log[] = "../images/$image_filename";
+                }
+
+                $link->setAttribute('href', "../images/$image_filename");
             }
         }
 
@@ -412,7 +429,6 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
                 }
             }
         }
-        // 2. Process and copy files
         process_media_files($imageSources, 'images', $upload_dir, $replacementLinks, $media_files_log);
         process_media_files($videoSources, 'videos', $upload_dir, $replacementLinks, $media_files_log);
         process_media_files($pdfSources, 'pdfs', $upload_dir, $replacementLinks, $media_files_log);

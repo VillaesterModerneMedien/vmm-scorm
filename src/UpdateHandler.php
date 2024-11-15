@@ -87,7 +87,7 @@ class UpdateHandler
         $export_directory = "{$upload_dir['basedir']}/scorm_exports";
 
         // Clear the scorm_exports directory excluding css, js, images,videos and uncanny-snc
-        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'pdfs', 'uncanny-snc', 'iframes', 'webfonts']);
+        VMM_clear_directory($export_directory, ['css', 'js', 'images', 'videos', 'pdfs', 'uncanny-snc', 'iframes', 'webfonts', 'xsd']);
 
         // Clear the contents of uncanny-snc directory but keep the directory itself
         $uncanny_snc_directory = "$export_directory/uncanny-snc";
@@ -223,9 +223,9 @@ class UpdateHandler
                   xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   identifier="com.example.scorm.demo" version="1.2"
-                  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
-                            http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
-
+                  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 xsd/imscp_rootv1p1p2.xsd
+                             http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 xsd/imsmd_rootv1p2p1.xsd
+                             http://www.adlnet.org/xsd/adlcp_rootv1p2 xsd/adlcp_rootv1p2.xsd">
         <metadata>
             <schema>ADL SCORM</schema>
             <schemaversion>1.2</schemaversion>
@@ -299,7 +299,8 @@ class UpdateHandler
                 'pdfs',
                 'uncanny-snc',
                 'iframes',
-                'webfonts'
+                'webfonts',
+                'xsd'
             ];
 
             foreach ($folders as $folder) {
