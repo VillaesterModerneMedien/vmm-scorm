@@ -4,9 +4,27 @@
 //UI-Kit - Elementor Anpassungen
 .elementor-toggle,
 .elementor-accordion {
-  .elementor-Accordion-item.uk-open{
+  .elementor-toggle-item{
+    .elementor-toggle-icon-closed svg {
+      transition: transform 0.3s;
+    }
+    &.uk-open{
+      .elementor-toggle-icon-closed svg {
+        transform: rotate(90deg);
+      }
+    }
+  }
+  .elementor-accordion-item.uk-open{
     .elementor-tab-content {
-        margin-top:0;
+        margin-top:0!important;
+    }
+    .elementor-accordion-icon{
+      &-closed{
+        display:none!important;
+      }
+      &-opened{
+        display:block!important;
+      }
     }
   }
   .elementor-tab-content {
@@ -30,6 +48,7 @@
     margin-top: unset;
   }
 }
+
 .elementor-button {
   border-radius: 7px;
 }
@@ -45,7 +64,11 @@
 .elementor-blockquote--skin-quotation .elementor-blockquote::before {
   content: "“"!important;
 }
-
+.elementor-alert-info .elementor-alert {
+  color: #575656!important;
+  background-color: #FFA05B88!important;
+  border-color: #FFA05B!important;
+}
 .uk-switcher.uk-margin {
   border: 1px solid grey;
   margin: 0 !important;
@@ -91,6 +114,10 @@ html{
 body{
   background-color:#FFF!important;
 }
+h1,h2,h3,h4,h5,h6{
+  color:#575656;
+}
 a:hover {
   text-decoration: none;
+  color:#A6A6A6;
 }

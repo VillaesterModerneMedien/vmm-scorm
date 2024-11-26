@@ -388,6 +388,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
 
                 // Immediately replace the href attribute
                 $link->setAttribute('href', "../pdfs/$pdf_filename");
+                $link->setAttribute('target', '_blank');
             }
             if ($link->hasAttribute('data-elementor-open-lightbox') &&
                 $link->getAttribute('data-elementor-open-lightbox') === 'yes') {
@@ -405,7 +406,6 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
         }
 
-        // Replace the entire iframe processing loop with this simpler version
         foreach ($iframes as $iframe) {
             $src = $iframe->getAttribute('src');
             if ($src) {
@@ -476,6 +476,31 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
                 if ($itemId) {
                     $copy_directory = $upload_dir['basedir'] . "/uncanny-snc/$itemId";
                     $export_directory = $upload_dir['basedir'] . "/scorm_exports/uncanny-snc/$itemId";
+
+                    // Process content of the source directory for nested iframes
+                    if (file_exists($copy_directory)) {
+                        $indexFile = $copy_directory . '/tc_index.html';
+                        if (file_exists($indexFile)) {
+                            $nestedContent = file_get_contents($indexFile);
+                            $nestedDom = new \DOMDocument();
+                            @$nestedDom->loadHTML($nestedContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+                            // Find and process nested iframes
+                            $nestedIframes = $nestedDom->getElementsByTagName('iframe');
+                            foreach ($nestedIframes as $nestedIframe) {
+                                $nestedSrc = $nestedIframe->getAttribute('src');
+                                if ($nestedSrc && str_contains($nestedSrc, $itemId)) {
+                                    $newSrcParts = explode('/' . $itemId . '/', $nestedSrc);
+                                    $newSrc = './' . $newSrcParts[1];
+                                    $nestedIframe->setAttribute('src', $newSrc);
+                                }
+                            }
+
+                            // Save modified content
+                            file_put_contents($copy_directory. '/tc_index.html', $nestedDom->saveHTML());
+                        }
+                    }
+
                     vmm_copy_directory($copy_directory, $export_directory);
                 }
 
