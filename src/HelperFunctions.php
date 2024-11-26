@@ -346,6 +346,7 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
         // Extract and replace video URLs
         foreach ($videoElements as $video) {
             $src = $video->getAttribute('src');
+            $poster = $video->getAttribute('poster');
             $video_filename = vmm_get_filename_with_extension($src);
             $video_export_path = $upload_dir['basedir'] . "/scorm_exports/videos/$video_filename";
             $video_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $src);
@@ -356,6 +357,20 @@ if (!function_exists('vmm_convert_vc_sync_to_iframe')) {
             }
 
             $video->setAttribute('src', "../videos/$video_filename");
+
+            // Handle poster attribute
+            if ($poster) {
+                $poster_filename = vmm_get_filename_with_extension($poster);
+                $poster_export_path = $upload_dir['basedir'] . "/scorm_exports/images/$poster_filename";
+                $poster_copy_path = preg_replace('/^.*?\/uploads/', $upload_dir['basedir'], $poster);
+
+                if (!file_exists($poster_export_path)) {
+                    copy($poster_copy_path, $poster_export_path, $context);
+                    $media_files_log[] = "../images/$poster_filename";
+                }
+
+                $video->setAttribute('poster', "../images/$poster_filename");
+            }
         }
 
         // Extract and replace PDF & lightbox images URLs

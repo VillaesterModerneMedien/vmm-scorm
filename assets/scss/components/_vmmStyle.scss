@@ -1,8 +1,14 @@
 @import "uikit/src/scss/variables.scss";
 @import "uikit/src/scss/uikit.scss";
 
+//UI-Kit - Elementor Anpassungen
 .elementor-toggle,
 .elementor-accordion {
+  .elementor-Accordion-item.uk-open{
+    .elementor-tab-content {
+        margin-top:0;
+    }
+  }
   .elementor-tab-content {
     &[hidden] {
       display: none;
@@ -24,9 +30,34 @@
     margin-top: unset;
   }
 }
+.elementor-button {
+  border-radius: 7px;
+}
+.elementor-icon {
+  color: #575656;
+  &:hover {
+    color: #69727d;
+  }
+  &.elementor-social-icon {
+    color: #FFF;
+  }
+}
+.elementor-blockquote--skin-quotation .elementor-blockquote::before {
+  content: "“"!important;
+}
 
-
-
+.uk-switcher.uk-margin {
+  border: 1px solid grey;
+  margin: 0 !important;
+  padding: 20px 20px;
+}
+.uk-subnav.uk-subnav-pill .uk-active > a {
+  border: 1px solid grey;
+  background-color: unset;
+  color: grey;
+  margin-bottom: -1px;
+  border-bottom-color: #FFF;
+}
 .uk-slider{
   position:relative;
   .uk-slider-items{
@@ -51,4 +82,15 @@
 
     }
   }
+}
+
+//General Styles
+html{
+    font-family: "Open Sans",Sans-serif;
+  }
+body{
+  background-color:#FFF!important;
+}
+a:hover {
+  text-decoration: none;
 }

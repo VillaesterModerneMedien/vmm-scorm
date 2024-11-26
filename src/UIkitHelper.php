@@ -161,13 +161,18 @@ class UIkitHelper {
                 $lightboxSettings = json_decode(html_entity_decode($lightboxData->getAttribute('data-elementor-lightbox')), true);
                 $videoUrl = $lightboxSettings['url'];
 
+                // Create new relative video path
+                $videoFilename = basename($videoUrl);
+                $relativeVideoUrl = "../videos/" . $videoFilename;
+
                 // Create wrapper div
                 $wrapper = $dom->createElement('div');
                 $wrapper->setAttribute('uk-lightbox', '');
 
                 // Create link for lightbox
                 $link = $dom->createElement('a');
-                $link->setAttribute('href', $videoUrl);
+                $link->setAttribute('href', $relativeVideoUrl);
+                $link->setAttribute('role', 'button');
 
                 // Get and set thumbnail image
                 $thumbnail = $xpath->query(".//img", $video)->item(0);

@@ -1,8 +1,9 @@
 // assets/js/core/VMMScorm.js
 import '@scss/main.scss';
-import 'typeface-open-sans/files/open-sans-latin-400.woff2';
-import 'typeface-open-sans/files/open-sans-latin-700.woff2';
+//import 'typeface-open-sans/files/open-sans-latin-400.woff2';
+//import 'typeface-open-sans/files/open-sans-latin-700.woff2';
 
+import 'typeface-open-sans/index.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@fortawesome/fontawesome-free/js/all.min.js';
 

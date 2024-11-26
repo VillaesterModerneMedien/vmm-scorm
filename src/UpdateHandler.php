@@ -222,17 +222,14 @@ class UpdateHandler
         <manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
                   xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  identifier="com.example.scorm.demo" version="1.2"
-                  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 xsd/imscp_rootv1p1p2.xsd
-                             http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 xsd/imsmd_rootv1p2p1.xsd
-                             http://www.adlnet.org/xsd/adlcp_rootv1p2 xsd/adlcp_rootv1p2.xsd">
+                  identifier="com.vmm.scorm.<?=$lesson_id;?>" version="1.2"
+                  xsi:schemaLocation="
+                    http://www.imsproject.org/xsd/imscp_rootv1p1p2 xsd/imscp_rootv1p1p2.xsd
+                    http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 xsd/imsmd_rootv1p2p1.xsd
+                    http://www.adlnet.org/xsd/adlcp_rootv1p2 xsd/adlcp_rootv1p2.xsd">
         <metadata>
             <schema>ADL SCORM</schema>
             <schemaversion>1.2</schemaversion>
-            <!-- API and alternate links -->
-            <link rel="https://api.w.org/" href="<?php echo esc_url(home_url('wp-json')); ?>"/>
-            <link rel="alternate" type="application/json"
-                  href='<?php echo home_url("wp-json/wp/v2/pages/$lesson_id"); ?>'/>
         </metadata>
 
         <organizations default="kompetenzSchmiedeOrg">
@@ -249,18 +246,17 @@ class UpdateHandler
             <resource identifier="<?php echo 'lesson_' . $lesson_id; ?>" type="webcontent" adlcp:scormtype="sco"
                       href="<?php echo 'lessons/' . $lesson_slug . '.html'; ?>">
                 <file href="<?php echo 'lessons/' . $lesson_slug . '.html'; ?>"/>
-                <!-- CSS Links -->
-                <file href="../css/vmm-scorm.css"/>
-
-                <!-- JS Links -->
-                <file href="../js/vmm-scorm.js"/>
+                <file href="css/vmm-scorm.css"/>
+                <file href="js/vmm-scorm.js"/>
 
                 <?php
-                if (!empty($media_files_log[$lesson_id])) {
-                    foreach ($media_files_log[$lesson_id] as $file_source) {
+                if (!empty($images_videos_files[$lesson_id])) {
+                    foreach ($images_videos_files[$lesson_id] as $file_source) {
+                        $file_source = ltrim($file_source, '../');
                         echo "<file href='$file_source'/>";
                     }
                 } ?>
+
 
             </resource>
         </resources>
